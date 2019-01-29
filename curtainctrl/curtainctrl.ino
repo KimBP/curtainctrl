@@ -33,14 +33,18 @@
 
 /* Motor related wires */
 
+/* =========================================================== */
+/* Module global variables */
+static RTC_DS3231 rtc;
+static const char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 /* =========================================================== */
 /* Init function call once by Arduino framework */
 void setup() 
 {
-  
-  
-  
+
+  Initialize_RTC();
+
 }
 
 
@@ -48,7 +52,23 @@ void setup()
 /* Function called continously by Arduino framework */
 void loop()
 {
+  DateTime t = rtc.now();
   
+  delay(3000);
+}
+
+
+/* =========================================================== */
+/* RTC helpers */
+void Initialize_RTC()
+{
+  if (! rtc.begin() ) {
+    Serial.println("Couldn't find RTC");
+    while(1); // Stay here forever
+  }
   
-  
+  if (rtc.lostPower()) {
+    Serial.println("RTC lost power. New time set");
+    rtc.adjust(DateTime(F(__DATE__),F(__TIME__)));
+  }
 }
