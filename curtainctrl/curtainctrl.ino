@@ -43,8 +43,13 @@ static const char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednes
 void setup() 
 {
 
-  Initialize_RTC();
+  Serial.begin(9600); // For debugging
+  delay(3000);        //Wait for console to open
+  Serial.println("CurtainCtrl started");
+  
 
+  Initialize_RTC();
+  
 }
 
 
