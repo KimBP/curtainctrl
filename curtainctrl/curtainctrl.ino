@@ -1,3 +1,4 @@
+
 /* 
   CurtainCtrl is a BT enabled controller supposed to control a curtain using a little motor
   The module has an RTC module supposed to execute 'timed' commands at the right time
@@ -15,7 +16,10 @@
 
 /* =========================================================== */
 /* Include modules needed */
-#include <SoftwareSerial.h>  /* USed for comm. with BT module */
+#include <SoftwareSerial.h>  /* Used for comm. with BT module */
+#include <Wire.h>            /* Needed by RTClib.h            */
+#include <RTClib.h>          /* Library for RTC module        */
+
 
 /* =========================================================== */
 /* Const defines. Must match HW cabling */
