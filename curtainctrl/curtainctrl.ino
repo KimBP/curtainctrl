@@ -59,6 +59,7 @@ void loop()
 {
   DateTime t = rtc.now();
   
+  dbgPrintTime(t);
   delay(3000);
 }
 
@@ -76,4 +77,25 @@ void Initialize_RTC()
     Serial.println("RTC lost power. New time set");
     rtc.adjust(DateTime(F(__DATE__),F(__TIME__)));
   }
+}
+
+/* =========================================================== */
+/* Debug helpers */
+void dbgPrintTime(DateTime t)
+{
+    Serial.print(t.year(), DEC);
+    Serial.print('/');
+    Serial.print(t.month(), DEC);
+    Serial.print('/');
+    Serial.print(t.day(), DEC);
+    Serial.print(" (");
+    Serial.print(daysOfTheWeek[t.dayOfTheWeek()]);
+    Serial.print(") ");
+    Serial.print(t.hour(), DEC);
+    Serial.print(':');
+    Serial.print(t.minute(), DEC);
+    Serial.print(':');
+    Serial.print(t.second(), DEC);
+    Serial.println();
+
 }
