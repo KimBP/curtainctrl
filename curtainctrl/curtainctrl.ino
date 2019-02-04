@@ -38,6 +38,9 @@
 static RTC_DS3231 rtc;
 static const char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
+
+static SoftwareSerial bluetooth(BT_TX_PIN, BT_RX_PIN);   // The bluetooth object
+
 /* =========================================================== */
 /* Init function call once by Arduino framework */
 void setup() 
@@ -47,9 +50,9 @@ void setup()
   delay(3000);        //Wait for console to open
   Serial.println("CurtainCtrl started");
   
-
   Initialize_RTC();
-  
+
+  bluetooth.begin(9600);  
 }
 
 
@@ -61,8 +64,57 @@ void loop()
   
   dbgPrintTime(t);
   delay(3000);
+  btInteractive();
 }
 
+
+/* =========================================================== */
+/* Bluetooth helpers */
+void btWaitForReply()
+{
+    bluetooth.flush();
+    while(!bluetooth.available()) {};
+}
+
+void btInteractive()
+{
+    if (bluetooth.available() > 0) {
+        bool keepReading = true;
+        Serial.println("Bluetooth activity registered");
+        
+        bluetooth.flush(); // Skip what have brought us in here
+        while(keepReading) {
+            bluetooth.println("0->Inc hour");
+            bluetooth.println("1->Dec hour");
+            bluetooth.println("X-Exit");
+          
+            btWaitForReply();
+            char btChar = bluetooth.read();
+            Serial.print("Received a command from BT: ");
+            Serial.println(btChar);
+            
+            TimeSpan deltaTime(60*60);
+            
+            switch (btChar) {
+              case '0':
+                  rtc.adjust(rtc.now()+deltaTime);
+                  break;
+                  
+              case '1':
+                  rtc.adjust(rtc.now()-deltaTime);
+                  break;
+              
+              case 'x': // Accept both lower case 
+              case 'X': // and upper case X
+                  bluetooth.println("Exiting menu");
+                  keepReading = false;
+                  break;
+              default: 
+                  break;
+            }
+        }
+    }
+}
 
 /* =========================================================== */
 /* RTC helpers */
